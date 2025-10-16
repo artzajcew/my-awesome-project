@@ -25,6 +25,7 @@
     </header>
     
     <main>
+        <div class="container">
         <!-- Хлебные крошки -->
         <nav class="breadcrumbs" aria-label="Хлебные крошки">
     <ul class="breadcrumbs__list">
@@ -56,50 +57,101 @@
         <section>
             <h2>Форма обратной связи</h2>
             <p><!-- Кнопка открытия модалки -->
-<button id="openDialog" type="button">Написать нам</button>
+<button id="openDialog" class="btn" type="button">Написать нам</button>
 
 <!-- Модалка с формой -->
-<dialog id="contactDialog" aria-labelledby="dialogTitle">
-    <h2 id="dialogTitle">Обратная связь</h2>
+<dialog id="contactDialog" class="modal" aria-labelledby="dialogTitle">
+    <div class="modal__header">
+        <h2 id="dialogTitle" class="modal__title">Обратная связь</h2>
+        <button class="modal__close" id="closeDialog" aria-label="Закрыть">×</button>
+    </div>
     
-    <form id="contactForm" method="dialog" novalidate>
-        <label for="name">Имя</label>
-        <input id="name" name="name" type="text" required minlength="2" autocomplete="given-name">
-        
-        <label for="email">E-mail</label>
-        <input id="email" name="email" type="email" required autocomplete="email">
-        
-        <label for="phone">Телефон</label>
-        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
-               aria-describedby="phoneHelp" placeholder="+7 (___) ___-__-__"
-               required pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$">
-        <small id="phoneHelp">Формат: +7 (900) 000-00-00</small>
-        
-        <label for="date">Дата</label>
-        <input id="date" name="date" type="date">
-        
-        <label for="topic">Тема</label>
-        <select id="topic" name="topic" required>
-            <option value="">Выберите тему</option>
-            <option>Вопрос</option>
-            <option>Заказ</option>
-        </select>
-        
-        <label for="message">Сообщение</label>
-        <textarea id="message" name="message" rows="4" required></textarea>
-        
-        <div class="form-actions">
-            <button type="button" id="closeDialog">Закрыть</button>
-            <button type="submit">Отправить</button>
-        </div>
-    </form>
-</dialog></p>
+    <div class="modal__body">
+        <form id="contactForm" class="form" method="dialog" novalidate>
+            <div class="form__group">
+                <label for="name" class="form__label">Имя *</label>
+                <input id="name" name="name" type="text" class="form__field" required minlength="2" autocomplete="given-name">
+                <div class="form__error">Пожалуйста, введите ваше имя</div>
+            </div>
+            
+            <div class="form__group">
+                <label for="email" class="form__label">E-mail *</label>
+                <input id="email" name="email" type="email" class="form__field" required autocomplete="email">
+                <div class="form__error">Пожалуйста, введите корректный email</div>
+            </div>
+            
+            <div class="form__group">
+                <label for="phone" class="form__label">Телефон *</label>
+                <input id="phone" name="phone" type="tel" class="form__field" 
+                       inputmode="tel" autocomplete="tel"
+                       placeholder="+7 (___) ___-__-__"
+                       required pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$">
+                <div class="form__help">Формат: +7 (900) 000-00-00</div>
+                <div class="form__error">Пожалуйста, введите корректный номер телефона</div>
+            </div>
+            
+            <div class="form__group">
+                <label for="date" class="form__label">Дата</label>
+                <input id="date" name="date" type="date" class="form__field">
+            </div>
+            
+            <div class="form__group">
+                <label for="topic" class="form__label">Тема *</label>
+                <select id="topic" name="topic" class="form__field" required>
+                    <option value="">Выберите тему</option>
+                    <option>Вопрос о продукции</option>
+                    <option>Заказ и доставка</option>
+                    <option>Сотрудничество</option>
+                    <option>Другое</option>
+                </select>
+                <div class="form__error">Пожалуйста, выберите тему</div>
+            </div>
+            
+            <div class="form__group">
+                <label for="message" class="form__label">Сообщение *</label>
+                <textarea id="message" name="message" class="form__field" rows="4" required></textarea>
+                <div class="form__error">Пожалуйста, введите ваше сообщение</div>
+            </div>
+            
+            <div class="modal__footer">
+                <button type="button" class="btn btn--secondary" id="closeDialogBtn">Закрыть</button>
+                <button type="submit" class="btn">Отправить</button>
+            </div>
+        </form>
+    </div>
+</dialog>
         </section>
-    </main>
-    
-    <footer>
+        <footer>
         <p>&copy; 2025 dbdclothes. Все права защищены.</p>
         <p>Телефон: +7 (123) 456-78-90</p>
     </footer>
+    <button class="theme-toggle btn btn--secondary" type="button" aria-pressed="false">Сменить тему</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.querySelector('.theme-toggle');
+    if (!btn) return;
+    
+    const KEY = 'theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Применяем сохраненную тему или системную
+    if (localStorage.getItem(KEY) === 'dark' || (!localStorage.getItem(KEY) && prefersDark)) {
+        document.body.classList.add('theme-dark');
+        btn.setAttribute('aria-pressed', 'true');
+    }
+    
+    // Обработчик клика
+    btn.addEventListener('click', function() {
+        const isDark = document.body.classList.toggle('theme-dark');
+        btn.setAttribute('aria-pressed', String(isDark));
+        localStorage.setItem(KEY, isDark ? 'dark' : 'light');
+    });
+});
+</script>
+        </div>
+    </main>
+    
+    
 </body>
 </html>
